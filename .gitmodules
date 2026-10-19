@@ -1,0 +1,24 @@
+[submodule "auth-service"]
+	path = auth-service
+	url = https://github.com/GKDI-Team/dorm-support-auth.git
+	branch = dev
+[submodule "gateway-service"]
+	path = gateway-service
+	url = https://github.com/GKDI-Team/dorm-support-gateway.git
+	branch = dev
+[submodule "issues-service"]
+	path = issues-service
+	url = https://github.com/GKDI-Team/dorm-support-issues.git
+	branch = dev
+[submodule "notifications-service"]
+	path = notifications-service
+	url = https://github.com/GKDI-Team/dorm-support-notifications.git
+	branch = dev
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/GKDI-Team/dorm-support-frontend.git
+	branch = dev
+[submodule "documents"]
+	path = documents
+	url = https://github.com/GKDI-Team/dorm-support-documents.git
+	branch = dev
