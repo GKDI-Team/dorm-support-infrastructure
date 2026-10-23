@@ -3,7 +3,7 @@
 ## Сервисы
 
 - `gateway-service` — внешний вход приложения, порт `8080`.
-- `frontend` — минимальная страница проверки сервисов, порт `3000`.
+- `frontend` — web-интерфейс, доступный через Gateway на порту `8080`.
 - `auth-service` — заготовка сервиса авторизации.
 - `issues-service` — заготовка сервиса заявок и `GET /api/v1/issues`.
 - `notifications-service` — заготовка сервиса уведомлений.
@@ -24,7 +24,11 @@ curl http://localhost:8080/health
 curl http://localhost:8080/api/v1/issues
 ```
 
-Открыть страницу проверки сервисов: http://localhost:3000
+Открыть приложение: http://localhost:8080
+
+Открыть Swagger Gateway: http://localhost:8080/swagger-ui.html
+
+Frontend и API используют один origin `http://localhost:8080`. Frontend не публикует отдельный внешний порт.
 
 Внутри Docker каждый Spring Boot-сервис слушает стандартный порт `8080`. Наружу опубликован только Gateway. PostgreSQL разделён на три контейнера: `identity_db`, `issues_db` и `notifications_db`; внутри Docker каждый использует стандартный порт `5432`. Kafka использует внутренний `9092` и внешний listener `29092`.
 

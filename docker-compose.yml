@@ -2,10 +2,8 @@ services:
   frontend:
     build: ./frontend
     container_name: frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - gateway-service
+    expose:
+      - "80"
 
   gateway-service:
     build: ./gateway-service
@@ -16,6 +14,7 @@ services:
       - auth-service
       - issues-service
       - notifications-service
+      - frontend
 
   auth-service:
     build: ./auth-service
