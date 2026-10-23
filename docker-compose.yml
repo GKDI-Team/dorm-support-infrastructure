@@ -1,0 +1,134 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway-service
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - issues-service
+      - notifications-service
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    environment:
+      DB_HOST: identity_db
+      DB_NAME: identity_db
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    expose:
+      - "8080"
+    depends_on:
+      identity-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  issues-service:
+    build: ./issues-service
+    container_name: issues-service
+    environment:
+      DB_HOST: issues_db
+      DB_NAME: issues_db
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    expose:
+      - "8080"
+    depends_on:
+      issues-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  notifications-service:
+    build: ./notifications-service
+    container_name: notifications-service
+    environment:
+      DB_HOST: notifications_db
+      DB_NAME: notifications_db
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    expose:
+      - "8080"
+    depends_on:
+      notifications-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  identity-db:
+    image: postgres:17-alpine
+    container_name: identity_db
+    environment:
+      POSTGRES_USER: dormsupport
+      POSTGRES_PASSWORD: dormsupport
+      POSTGRES_DB: identity_db
+    volumes:
+      - identity_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dormsupport -d identity_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  issues-db:
+    image: postgres:17-alpine
+    container_name: issues_db
+    environment:
+      POSTGRES_USER: dormsupport
+      POSTGRES_PASSWORD: dormsupport
+      POSTGRES_DB: issues_db
+    volumes:
+      - issues_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dormsupport -d issues_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  notifications-db:
+    image: postgres:17-alpine
+    container_name: notifications_db
+    environment:
+      POSTGRES_USER: dormsupport
+      POSTGRES_PASSWORD: dormsupport
+      POSTGRES_DB: notifications_db
+    volumes:
+      - notifications_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dormsupport -d notifications_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:4.0.0
+    container_name: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    ports:
+      - "29092:29092"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+volumes:
+  identity_db_data:
+  issues_db_data:
+  notifications_db_data:
