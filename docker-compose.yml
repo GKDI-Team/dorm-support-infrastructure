@@ -40,6 +40,7 @@ services:
       DB_HOST: issues_db
       DB_NAME: issues_db
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      AUTH_SERVICE_URI: http://auth-service:8080
     expose:
       - "8080"
     depends_on:
@@ -47,6 +48,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+      auth-service:
+        condition: service_started
 
   notifications-service:
     build: ./notifications-service
