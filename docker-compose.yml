@@ -25,6 +25,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       JWT_SECRET: ${JWT_SECRET:-lI0NyCpHUBwt9I/uZwMWw4FBM3QJRWHJ8SaxTCJsqFic=}
       JWT_TTL: ${JWT_TTL:-24h}
+      AUTH_SEED_ENABLED: ${AUTH_SEED_ENABLED:-true}
     expose:
       - "8080"
     depends_on:
