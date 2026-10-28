@@ -60,6 +60,11 @@ services:
       DB_HOST: notifications_db
       DB_NAME: notifications_db
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ISSUE_EVENTS_TOPIC: ${ISSUE_EVENTS_TOPIC:-dormsupport.issue-events}
+      KAFKA_CONSUMER_GROUP: ${KAFKA_CONSUMER_GROUP:-dormsupport-notifications}
+      TELEGRAM_ENABLED: ${TELEGRAM_ENABLED:-false}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
     expose:
       - "8080"
     depends_on:
@@ -109,6 +114,7 @@ services:
       POSTGRES_DB: notifications_db
     volumes:
       - notifications_db_data:/var/lib/postgresql/data
+      - ./notifications-service/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/02-notifications-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dormsupport -d notifications_db"]
       interval: 5s
